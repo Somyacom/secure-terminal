@@ -1,0 +1,15 @@
+# Диапазоны совместимых версий. Для установки в эксплуатации используйте requirements.lock
+# (точные версии + SHA-256 каждого пакета):  pip install --require-hashes -r requirements.lock
+#
+# Криптография: ML-DSA, ML-KEM и HPKE появились в 50.x; проверено на 50.0.1
+cryptography>=50,<51
+# HTTP-сервер, асинхронность и валидация
+fastapi>=0.141,<0.142
+starlette>=1.7,<2
+uvicorn>=0.54,<0.55
+anyio>=4,<5
+pydantic>=2.13,<3
+# HTTP-клиент (и TestClient в тестах)
+httpx>=0.28,<0.29
+# Тесты
+pytest>=8,<10

@@ -1,0 +1,40 @@
+# /etc/systemd/system/secure-terminal.service
+# Установка: см. README, раздел «Постоянная работа».
+[Unit]
+Description=SECURE-TERMINAL/v2 server
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+User=st
+Group=st
+WorkingDirectory=/opt/secure-terminal
+# Пароль к зашифрованному server.json передаётся как credential systemd (файл виден только службе)
+LoadCredential=st-passphrase:/etc/secure-terminal/passphrase
+ExecStart=/opt/secure-terminal/.venv/bin/python server.py serve \
+    --keys /var/lib/secure-terminal/keys/server.json \
+    --registry /var/lib/secure-terminal/keys/terminals.json \
+    --db /var/lib/secure-terminal/data/journal.db \
+    --host 127.0.0.1 --port 8000 --workers 2 --behind-proxy \
+    --passphrase-file ${CREDENTIALS_DIRECTORY}/st-passphrase
+Restart=on-failure
+UMask=0077
+
+# Песочница
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+PrivateDevices=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+RestrictNamespaces=true
+LockPersonality=true
+MemoryDenyWriteExecute=true
+CapabilityBoundingSet=
+ReadWritePaths=/var/lib/secure-terminal
+
+[Install]
+WantedBy=multi-user.target
